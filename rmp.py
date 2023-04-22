@@ -129,19 +129,18 @@ def showReadme(content):
     if len(totalLines) <= viewLines:
         console.print(Markdown(content))
     else:
-        os.system('clear')
         prettyPrintLines(startLine,viewLines,totalLines,cols)
         while True:
             key = getkey()
             if key == 'n':
                 if viewLines+startLine < len(totalLines) - 4:
                     startLine += 5
-                    os.system('clear')
+                    #os.system('clear')
                     prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
             elif key == 'p':
                 if startLine > 5:
                     startLine -= 5
-                    os.system('clear')
+                    #os.system('clear')
                     prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
             elif key == 'q':
                 os.system('clear')
