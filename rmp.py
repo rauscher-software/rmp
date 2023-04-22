@@ -123,24 +123,26 @@ def getReadme(gitUrl):
 def showReadme(content):
     os.system('clear')
     totalLines = content.splitlines()
-    viewLines = shutil.get_terminal_size().lines - 4
+    viewLines = shutil.get_terminal_size().lines - 3
     cols = shutil.get_terminal_size().columns
     startLine = 0
     if len(totalLines) <= viewLines:
         console.print(Markdown(content))
     else:
-        prettyPrintLines(startLine,viewLines,totalLines,cols)
+        prettyPrintLines(startLine,viewLines+1,totalLines,cols)
         while True:
             key = getkey()
             if key == 'n':
-                if viewLines+startLine < len(totalLines) - 4:
-                    startLine += 5
-                    #os.system('clear')
+                if viewLines+startLine < len(totalLines):
+                    startLine += viewLines-2
+                    os.system('clear')
                     prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
             elif key == 'p':
-                if startLine > 5:
-                    startLine -= 5
-                    #os.system('clear')
+                if startLine > 0:
+                    startLine -= viewLines+2
+                    if startLine < 0:
+                        startLine = 0;
+                    os.system('clear')
                     prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
             elif key == 'q':
                 os.system('clear')
@@ -149,7 +151,8 @@ def showReadme(content):
 def prettyPrintLines(start,end,lines,cols):
     md = ''
     for i in range(start,end):
-        md += f"{lines[i]}\n"
+        if i < len(lines):
+            md += f"{lines[i]}\n"
     console.print(Markdown(md))
     print('\n')
     print('-' * cols)
