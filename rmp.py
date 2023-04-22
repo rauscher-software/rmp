@@ -136,13 +136,13 @@ def showReadme(content):
             if key == 'n':
                 if viewLines+startLine < len(totalLines) - 4:
                     startLine += 5
-                os.system('clear')
-                prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
+                    os.system('clear')
+                    prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
             elif key == 'p':
                 if startLine > 5:
                     startLine -= 5
-                os.system('clear')
-                prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
+                    os.system('clear')
+                    prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
             elif key == 'q':
                 os.system('clear')
                 exit(0)
