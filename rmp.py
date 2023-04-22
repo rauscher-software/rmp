@@ -10,6 +10,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 import requests
 import base64
+import shutil
 
 console = Console()
 
@@ -86,22 +87,8 @@ def show_page(page):
 
     if key.isdigit():
         i = int(key)
-        os.system('clear')
         gitUrl = split_res[page][i-1]['url']
-        urlParts = gitUrl.split('/')
-        user = urlParts[3]
-        repo = urlParts[4]
-        rawUrl = f"https://api.github.com/repos/{user}/{repo}/contents/README.md"
-        req = requests.get(rawUrl)
-        if req.status_code == requests.codes.ok:
-          req = req.json()
-          byte_content = base64.b64decode(req['content'])
-          content = byte_content.decode("utf-8")
-          os.system('clear')
-          console.print(Markdown(content))
-        else:
-          print('Sorry, no README file found...')
-          exit(0)
+        getReadme(gitUrl)
 
     elif key == 'n':
         pagination += 1
@@ -116,6 +103,58 @@ def show_page(page):
     elif key == 'q':
         os.system('clear')
         exit(0)
+
+def getReadme(gitUrl):
+    os.system('clear') 
+    urlParts = gitUrl.split('/')
+    user = urlParts[3]
+    repo = urlParts[4]
+    rawUrl = f"https://api.github.com/repos/{user}/{repo}/contents/README.md"
+    req = requests.get(rawUrl)
+    if req.status_code == requests.codes.ok:
+        req = req.json()
+        byte_content = base64.b64decode(req['content'])
+        content = byte_content.decode("utf-8")
+        showReadme(content)
+    else:
+        print('Sorry, no README file found...')
+        exit(0)
+
+def showReadme(content):
+    os.system('clear')
+    totalLines = content.splitlines()
+    viewLines = shutil.get_terminal_size().lines - 4
+    cols = shutil.get_terminal_size().columns
+    startLine = 0
+    if len(totalLines) <= viewLines:
+        console.print(Markdown(content))
+    else:
+        os.system('clear')
+        prettyPrintLines(startLine,viewLines,totalLines,cols)
+        while True:
+            key = getkey()
+            if key == 'n':
+                if viewLines+startLine < len(totalLines) - 4:
+                    startLine += 5
+                os.system('clear')
+                prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
+            elif key == 'p':
+                if startLine > 5:
+                    startLine -= 5
+                os.system('clear')
+                prettyPrintLines(startLine,viewLines+startLine,totalLines,cols)
+            elif key == 'q':
+                os.system('clear')
+                exit(0)
+
+def prettyPrintLines(start,end,lines,cols):
+    md = ''
+    for i in range(start,end):
+        md += f"{lines[i]}\n"
+    console.print(Markdown(md))
+    print('\n')
+    print('-' * cols)
+    print('Press [n/p] for scrolling, or [q] to quit.')
 
 pagination = 0
 args = sys.argv
